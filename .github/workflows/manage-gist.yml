@@ -26,6 +26,7 @@ jobs:
 
     - name: Run Gist Management Script
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GIST_ID: ${{ secrets.GIST_ID }}
       run: |
         python .github/workflows/manage_gist.py
