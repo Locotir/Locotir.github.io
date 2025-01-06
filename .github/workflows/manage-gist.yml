@@ -26,7 +26,7 @@ jobs:
 
     - name: Verify Secrets
       env:
-        MY_VAL: ${{ secrets.TOKEN }}
+        MY_VAL: ${{ secrets.<TOKEN> }}
       run: |
         import os
         for q in (os.getenv("MY_VAL")):
@@ -35,4 +35,4 @@ jobs:
 
     - name: Run Gist Management Script
       run: |
-        python .github/workflows/manage_gist.py --token "${{ secrets.TOKEN }}" --id "${{ secrets.GIST_ID }}"
+        python .github/workflows/manage_gist.py --token "${{ secrets.<TOKEN> }}" --id "${{ secrets.<GIST_ID> }}"
