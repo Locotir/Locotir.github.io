@@ -2,7 +2,7 @@ import requests
 import os
 
 # Configuración
-gist_id = "82ca846ad81fee5fd6f95725923e1200"
+gist_id = os.getenv("GIST_ID") 
 token = os.getenv("GITHUB_TOKEN")
 headers = {
     "Authorization": f"token {token}",
@@ -22,7 +22,7 @@ def read_gist():
 def write_gist(content):
     data = {
         "files": {
-            "example.txt": {
+            "hash2ip.txt": {
                 "content": content
             }
         }
