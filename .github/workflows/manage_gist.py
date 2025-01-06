@@ -1,13 +1,18 @@
 import requests
-import os
+import argparse
 
-# Configuración
-gist_id = os.getenv("GIST_ID") 
-token = os.getenv("TOKEN")
+# Configuración de los argumentos de línea de comandos
+parser = argparse.ArgumentParser(description='Manage Gists')
+parser.add_argument('--token', required=True, help='GitHub token')
+parser.add_argument('--id', required=True, help='Gist ID')
 
-# Imprimir los valores de las variables de entorno para depuración
+args = parser.parse_args()
+gist_id = args.id
+token = args.token
+
+# Imprimir los valores de los argumentos para depuración
 print(f"GIST_ID: {gist_id}")
-print(f"GITHUB_TOKEN: {token[:5]}... (truncated)")
+print(f"TOKEN: {token[:5]}... (truncated)")
 
 headers = {
     "Authorization": f"token {token}",
