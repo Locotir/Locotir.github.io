@@ -1,8 +1,6 @@
-from flask import Flask, request, jsonify
 import os
+import sys
 import requests
-
-app = Flask(__name__)
 
 # Obtener los secretos desde las variables de entorno
 token = os.getenv('TOKEN')
@@ -36,24 +34,27 @@ def write_gist(content):
     response = requests.patch(f"https://api.github.com/gists/{gist_id}", headers=headers, json=data)
     return response.status_code == 200
 
-@app.route('/read', methods=['GET'])
-def read():
-    hash_value = request.args.get('hash')
+# Procesar los argumentos
+action = sys.argv[1]
+hash_value = sys.argv[2] if len(sys.argv) > 2 else None
+ip_value = sys.argv[3] if len(sys.argv) > 3 else None
+
+result = ""
+
+if action == 'read':
     gist_content = read_gist()
     if gist_content and "hash2ip.txt" in gist_content["files"]:
         file_content = gist_content["files"]["hash2ip.txt"]["content"]
         lines = file_content.splitlines()
         for line in lines:
             if line.startswith(hash_value):
-                return jsonify({"content": line})
-        return jsonify({"error": f"Hash {hash_value} not found"}), 404
+                result = line
+                break
+        if not result:
+            result = f"Hash {hash_value} not found"
     else:
-        return jsonify({"error": "hash2ip.txt not found"}), 404
-
-@app.route('/modify', methods=['POST'])
-def modify():
-    hash_value = request.json.get('hash')
-    new_ip = request.json.get('ip')
+        result = "hash2ip.txt not found"
+elif action == 'modify':
     gist_content = read_gist()
     if gist_content and "hash2ip.txt" in gist_content["files"]:
         file_content = gist_content["files"]["hash2ip.txt"]["content"]
@@ -62,39 +63,37 @@ def modify():
         found = False
         for line in lines:
             if line.startswith(hash_value):
-                updated_lines.append(f"{hash_value},{new_ip}")
+                updated_lines.append(f"{hash_value},{ip_value}")
                 found = True
             else:
                 updated_lines.append(line)
         if not found:
-            return jsonify({"error": f"Hash {hash_value} not found"}), 404
-        updated_content = "\n".join(updated_lines)
-        success = write_gist(updated_content)
-        if success:
-            return jsonify({"message": "Content updated successfully"})
+            result = f"Hash {hash_value} not found"
         else:
-            return jsonify({"error": "Failed to update content"}), 500
+            updated_content = "\n".join(updated_lines)
+            success = write_gist(updated_content)
+            if success:
+                result = "Content updated successfully"
+            else:
+                result = "Failed to update content"
     else:
-        return jsonify({"error": "hash2ip.txt not found"}), 404
-
-@app.route('/add', methods=['POST'])
-def add():
-    hash_value = request.json.get('hash')
-    ip_value = request.json.get('ip')
+        result = "hash2ip.txt not found"
+elif action == 'add':
     gist_content = read_gist()
     if gist_content and "hash2ip.txt" in gist_content["files"]:
         file_content = gist_content["files"]["hash2ip.txt"]["content"]
         new_line = f"{hash_value},{ip_value}"
         if any(line.startswith(hash_value) for line in file_content.splitlines()):
-            return jsonify({"error": f"Hash {hash_value} already exists"}), 409
-        updated_content = file_content + "\n" + new_line
-        success = write_gist(updated_content)
-        if success:
-            return jsonify({"message": "Content added successfully"})
+            result = f"Hash {hash_value} already exists"
         else:
-            return jsonify({"error": "Failed to add content"}), 500
+            updated_content = file_content + "\n" + new_line
+            success = write_gist(updated_content)
+            if success:
+                result = "Content added successfully"
+            else:
+                result = "Failed to add content"
     else:
-        return jsonify({"error": "hash2ip.txt not found"}), 404
+        result = "hash2ip.txt not found"
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+# Imprimir el resultado
+print(result)
