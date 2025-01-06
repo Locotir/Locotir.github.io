@@ -1,17 +1,16 @@
+import os
 import requests
-import argparse
 
-# Configuración de los argumentos de línea de comandos
-parser = argparse.ArgumentParser(description='Manage Gists')
-parser.add_argument('--token', required=True, help='GitHub token')
-parser.add_argument('--id', required=True, help='Gist ID')
+# Obtener los secretos desde las variables de entorno
+token = os.getenv('TOKEN')
+gist_id = os.getenv('GIST_ID')
 
-args = parser.parse_args()
-gist_id = args.id
-token = args.token
+# Verificar que los secretos se han establecido
+if not token or not gist_id:
+    raise ValueError("TOKEN or GIST_ID is not set")
 
-# Imprimir los valores de los argumentos para depuración
-print(f"GIST_ID: {gist_id}")
+# Imprimir mensajes de depuración sin exponer los valores reales
+print(f"GIST_ID: {'*' * len(gist_id)}")
 print(f"TOKEN: {token[:5]}... (truncated)")
 
 headers = {
@@ -21,7 +20,7 @@ headers = {
 
 # Función para leer el contenido del gist
 def read_gist():
-    print(f"Reading gist with ID: {gist_id}")
+    print(f"Reading gist with ID: {'*' * len(gist_id)}")
     response = requests.get(f"https://api.github.com/gists/{gist_id}", headers=headers)
     if response.status_code == 200:
         gist_content = response.json()
@@ -33,7 +32,7 @@ def read_gist():
 
 # Función para escribir contenido en el gist
 def write_gist(content):
-    print(f"Writing to gist with ID: {gist_id}")
+    print(f"Writing to gist with ID: {'*' * len(gist_id)}")
     data = {
         "files": {
             "example.txt": {
