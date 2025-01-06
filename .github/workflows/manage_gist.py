@@ -35,7 +35,7 @@ def write_gist(content):
     print(f"Writing to gist with ID: {'*' * len(gist_id)}")
     data = {
         "files": {
-            "example.txt": {
+            "hash2ip.txt": {
                 "content": content
             }
         }
@@ -50,6 +50,9 @@ def write_gist(content):
 gist_content = read_gist()
 
 # Escribir nuevo contenido en el gist
-if gist_content:
-    new_content = "Hello, modified world!"
+if gist_content and "hash2ip.txt" in gist_content["files"]:
+    original_content = gist_content["files"]["hash2ip.txt"]["content"]
+    new_content = original_content + "\nHello, modified world!"
     write_gist(new_content)
+else:
+    print("hash2ip.txt not found in the gist")
