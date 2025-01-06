@@ -3,7 +3,7 @@ import os
 
 # Configuración
 gist_id = os.getenv("GIST_ID") 
-token = os.getenv("GITHUB_TOKEN")
+token = os.getenv("TOKEN")
 headers = {
     "Authorization": f"token {token}",
     "Accept": "application/vnd.github.v3+json"
