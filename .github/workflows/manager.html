@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gist Management</title>
+    <script>
+        const flaskServerUrl = 'http://localhost:5000';
+
+        async function readGist() {
+            const hash = document.getElementById('hash').value;
+            const response = await fetch(`${flaskServerUrl}/read?hash=${hash}`);
+            const data = await response.json();
+            document.getElementById('gist-content').innerText = data.content || data.error;
+        }
+
+        async function modifyGist() {
+            const hash = document.getElementById('hash').value;
+            const newIp = document.getElementById('new-ip').value;
+            const response = await fetch(`${flaskServerUrl}/modify`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hash: hash, ip: newIp })
+            });
+            const data = await response.json();
+            alert(data.message || data.error);
+            readGist();  // Refresh content after modification
+        }
+
+        async function addGist() {
+            const hash = document.getElementById('hash').value;
+            const newIp = document.getElementById('new-ip').value;
+            const response = await fetch(`${flaskServerUrl}/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hash: hash, ip: newIp })
+            });
+            const data = await response.json();
+            alert(data.message || data.error);
+            readGist();  // Refresh content after addition
+        }
+
+        document.addEventListener('DOMContentLoaded', readGist);
+    </script>
+</head>
+<body>
+    <h1>Gist Management</h1>
+    <div>
+        <h2>Current Gist Content:</h2>
+        <pre id="gist-content"></pre>
+    </div>
+    <div>
+        <h2>Modify/Add Content:</h2>
+        <label for="hash">Hash:</label>
+        <input type="text" id="hash" name="hash"><br>
+        <label for="new-ip">IP:</label>
+        <input type="text" id="new-ip" name="new-ip"><br>
+        <button onclick="modifyGist()">Modify</button>
+        <button onclick="addGist()">Add</button>
+    </div>
+</body>
+</html>
