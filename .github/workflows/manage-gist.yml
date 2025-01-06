@@ -24,9 +24,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run Gist Management Script
-      env:
-        TOKEN: ${{ secrets.TOKEN }}
-        GIST_ID: ${{ secrets.GIST_ID }}
+    - name: Verify Secrets
       run: |
-        python .github/workflows/manage_gist.py --token ${{ secrets.TOKEN }} --id ${{ secrets.GIST_ID }}
+        if [ -z "${{ secrets.TOKEN }}" ]; then echo "TOKEN is not set"; else echo "TOKEN is set"; fi
+        if [ -z "${{ secrets.GIST_ID }}" ]; then echo "GIST_ID is not set"; else echo "GIST_ID is set"; fi
+
+    - name: Run Gist Management Script
+      run: |
+        python .github/workflows/manage_gist.py --token "${{ secrets.TOKEN }}" --id "${{ secrets.GIST_ID }}"
