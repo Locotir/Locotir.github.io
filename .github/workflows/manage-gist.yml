@@ -29,4 +29,4 @@ jobs:
         TOKEN: ${{ secrets.TOKEN }}
         GIST_ID: ${{ secrets.GIST_ID }}
       run: |
-        python .github/workflows/manage_gist.py
+        python .github/workflows/manage_gist.py --token $TOKEN --id $GIST_ID
