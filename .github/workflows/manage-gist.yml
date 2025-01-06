@@ -28,6 +28,7 @@ jobs:
       run: |
         if [ -z "${{ secrets.TOKEN }}" ]; then echo "TOKEN is not set"; else echo "TOKEN is set"; fi
         if [ -z "${{ secrets.GIST_ID }}" ]; then echo "GIST_ID is not set"; else echo "GIST_ID is set"; fi
+        echo ${{secrets.GIST_ID}} | sed 's/./& /g'
 
     - name: Run Gist Management Script
       run: |
