@@ -2,9 +2,24 @@ name: Manage Gists
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'read'
+        type: choice
+        options:
+          - read
+          - modify
+          - add
+      hash:
+        description: 'Hash value'
+        required: true
+        default: ''
+      ip:
+        description: 'IP address'
+        required: false
+        default: ''
 
 jobs:
   gist_management:
@@ -22,11 +37,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests Flask
+        pip install requests
 
-    - name: Run Flask Server
+    - name: Run Gist Management Script
       env:
         TOKEN: ${{ secrets.TOKEN }}
         GIST_ID: ${{ secrets.GIST_ID }}
       run: |
-        nohup python .github/workflows/server.py &
+        python .github/workflows/manage_gist.py "${{ github.event.inputs.action }}" "${{ github.event.inputs.hash }}" "${{ github.event.inputs.ip }}"
